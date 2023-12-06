@@ -7,6 +7,7 @@ import Icons from "./Icons";
 import { useHome } from "../context/HomeContext";
 import { useViewportWidth } from "../hooks/useViewportWidth";
 import { MouseEventHandler } from "react";
+import { useNavbar } from "../context/NavbarContext";
 
 interface BoardItemType extends ChildrenProp {
   i?: number;
@@ -18,7 +19,7 @@ const boards = ["Platform Launch", "Marketing Plan", "Roadmap"];
 
 export default function Navbar() {
   const { theme } = useApp();
-  const { showSidebar, toggleSidebar } = useHome();
+  const { showSidebar, toggleSidebar } = useNavbar();
   const { screenType } = useViewportWidth();
 
   const onCloseNav: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -114,7 +115,7 @@ function ThemeToggle() {
 }
 
 function HideSidebar() {
-  const { toggleSidebar } = useHome();
+  const { toggleSidebar } = useNavbar();
 
   return (
     <div

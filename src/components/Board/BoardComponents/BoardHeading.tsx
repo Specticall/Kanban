@@ -1,4 +1,5 @@
 import { useHome } from "../../../context/HomeContext";
+import { useNavbar } from "../../../context/NavbarContext";
 import { useViewportWidth } from "../../../hooks/useViewportWidth";
 import { Button } from "../../Button";
 import Icons from "../../Icons";
@@ -12,7 +13,7 @@ export function BoardHeading() {
   );
 }
 function HeadingTitle() {
-  const { toggleSidebar } = useHome();
+  const { toggleSidebar } = useNavbar();
   const { screenType } = useViewportWidth();
   const onOpenNav = () => {
     if (screenType === "desktop") return;

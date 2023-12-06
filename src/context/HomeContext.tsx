@@ -1,15 +1,7 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useReducer,
-  useEffect,
-  useLayoutEffect,
-} from "react";
+import { createContext, useContext, useReducer, useEffect } from "react";
 import { BoardData, ChildrenProp } from "../types/generalTypes";
 import { BASE_URL } from "../config/config";
 import { ErrorMessage } from "../types/generalTypes";
-import { useViewportWidth } from "../hooks/useViewportWidth";
 
 import { get_boardList_with_modified_subtask } from "../helper/BoardStateUpdater/get_boardList_with_modified_subtask";
 import { get_boardList_with_swapped_category } from "../helper/BoardStateUpdater/get_boardList_with_swapped_category";
@@ -21,8 +13,6 @@ type PageDestination = number;
 
 // Context output type
 interface HomeContextValues extends HomeStates {
-  showSidebar: boolean;
-  toggleSidebar: (state?: "open" | "close") => void;
   switchToPage: (pageDestination: PageDestination) => void;
   dispatch: ({ type, payload }: HomeAction) => void;
 }
@@ -126,8 +116,6 @@ function reducer(state: HomeStates, action: HomeAction): HomeStates {
 }
 
 export function HomeProvider({ children }: ChildrenProp) {
-  const { screenType } = useViewportWidth();
-  const [showSidebar, setShowSidebar] = useState(true);
   const [{ boardData, status, boardDataAll, boardPage }, dispatch] = useReducer(
     reducer,
     initialState
@@ -154,24 +142,6 @@ export function HomeProvider({ children }: ChildrenProp) {
     getBoards();
   }, []);
 
-  // Closes the sidebar whenever the screen changes to mobile
-  useLayoutEffect(() => {
-    if (screenType !== "desktop") {
-      setShowSidebar(false);
-    } else {
-      setShowSidebar(true);
-    }
-  }, [screenType]);
-
-  // Toggles sidebar visibility
-  const toggleSidebar = (state?: "open" | "close") => {
-    if (state) {
-      setShowSidebar(state === "open");
-    } else {
-      setShowSidebar((current) => !current);
-    }
-  };
-
   // Switch page
   const switchToPage = (pageDestination: PageDestination): void => {
     dispatch({ type: "page/switch", payload: pageDestination });
@@ -180,8 +150,6 @@ export function HomeProvider({ children }: ChildrenProp) {
   return (
     <HomeContext.Provider
       value={{
-        showSidebar,
-        toggleSidebar,
         boardData,
         status,
         boardDataAll,

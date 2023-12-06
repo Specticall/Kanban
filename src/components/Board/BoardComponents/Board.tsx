@@ -3,6 +3,7 @@ import { useViewportWidth } from "../../../hooks/useViewportWidth";
 import Icons from "../../Icons";
 import { BoardHeading } from "./BoardHeading";
 import { BoardContent } from "./BoardContent";
+import { useNavbar } from "../../../context/NavbarContext";
 
 export default function Board() {
   return (
@@ -16,7 +17,7 @@ export default function Board() {
 
 function ShowSidebar() {
   const { screenType } = useViewportWidth();
-  const { toggleSidebar, showSidebar } = useHome();
+  const { toggleSidebar, showSidebar } = useNavbar();
 
   if (showSidebar || screenType !== "desktop") return;
 
