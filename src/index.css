@@ -1,0 +1,68 @@
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../src/Fonts/PlusJakartaSans-Bold.ttf") format("ttf");
+}
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 500;
+  src: url("../src/Fonts/PlusJakartaSans-Medium.ttf") format("ttf");
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --clr-white: #ffffff;
+    --clr-black: #000112;
+    --clr-dark-grey: #2b2c37;
+    --clr-purple-main: #635fc7;
+    --clr-purple-hover: #a8a4ff;
+    --clr-medium-grey: #828fa3;
+    --clr-red: #ea5555;
+    --clr-red-hover: #ff9898;
+
+    --clr-purple-hightlight: rgba(98, 95, 199, 0.253);
+    /* Same colors on both themes */
+    --clr-text-secondary: #828fa3;
+  }
+  :root {
+    /* Light theme */
+    --clr-secondary-button: rgba(99, 95, 199, 0.1);
+    --clr-text-primary: #000112;
+    --clr-elements: #ffffff;
+    --clr-bg: #f4f7fd;
+    --clr-lines: #e4ebfa;
+    --clr-loader: #3e3f4e;
+    --clr-elementstransparent: #e9effa;
+    --clr-shadownav: rgba(54, 78, 126, 0.25);
+    --clr-navhover: rgba(151, 151, 151, 0.108);
+    --clr-shadowitem: rgba(54, 78, 126, 0.1);
+  }
+
+  :root[data-theme="dark"] {
+    --clr-secondary-button: #ffffff;
+    --clr-text-primary: #ffffff;
+    --clr-elements: #2b2c37;
+    --clr-elementstransparent: rgba(43, 44, 55, 0.25);
+    --clr-lines: #3e3f4e;
+    --clr-bg: #20212c;
+    --clr-loader: #fff;
+    --clr-shadownav: rgba(54, 78, 126, 0.25);
+    --clr-navhover: #ffffff;
+    --clr-shadowitem: rgba(54, 78, 126, 0.1);
+  }
+}
+
+* {
+  font-family: "Plus Jakarta Sans";
+}
+
+#root {
+  min-height: 100vh;
+}
