@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useHome } from "../../../context/HomeContext";
+import { useBoard } from "../../../context/BoardContext";
 import {
   BoardColumnType,
   BoardSubtask,
@@ -13,7 +13,7 @@ import PopupLayout from "../../PopupLayout";
 import { TaskDetails } from "./TaskDetails";
 
 export function BoardContent() {
-  const { status, boardData } = useHome();
+  const { status, boardData } = useBoard();
 
   // popup-modal is the class of the element that gets ignored / input reject
   const boardElementRef = useDrag("popup-modal");

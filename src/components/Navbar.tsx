@@ -4,7 +4,7 @@ import { useApp } from "../context/AppContext";
 import { BoardData, ChildrenProp } from "../types/generalTypes";
 import { ToggleButton } from "./ToggleButton";
 import Icons from "./Icons";
-import { useHome } from "../context/HomeContext";
+import { useBoard } from "../context/BoardContext";
 import { useViewportWidth } from "../hooks/useViewportWidth";
 import { MouseEventHandler } from "react";
 import { useNavbar } from "../context/NavbarContext";
@@ -63,7 +63,7 @@ function Logo({ theme }: { theme: string }) {
 
 function BoardList() {
   // TEMP
-  const { boardDataAll, boardPage: active } = useHome();
+  const { boardDataAll, boardPage: active } = useBoard();
 
   const boardsCount = boardDataAll.reduce(
     (result: number, current: BoardData) => {
@@ -137,7 +137,7 @@ function HideSidebar() {
 }
 
 function BoardItem({ children, i = -1, active = -2, isAccent }: BoardItemType) {
-  const { switchToPage } = useHome();
+  const { switchToPage } = useBoard();
   const isSelected = active === i;
 
   return (

@@ -1,4 +1,3 @@
-import { useHome } from "../../../context/HomeContext";
 import { useViewportWidth } from "../../../hooks/useViewportWidth";
 import Icons from "../../Icons";
 import { BoardHeading } from "./BoardHeading";

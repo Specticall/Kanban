@@ -1,4 +1,4 @@
-import { useHome } from "../../../context/HomeContext";
+import { useBoard } from "../../../context/BoardContext";
 import { useNavbar } from "../../../context/NavbarContext";
 import { useViewportWidth } from "../../../hooks/useViewportWidth";
 import { Button } from "../../Button";
@@ -34,7 +34,7 @@ function HeadingTitle() {
 }
 function HeadingButtons() {
   const { screenType } = useViewportWidth();
-  const { boardData } = useHome();
+  const { boardData } = useBoard();
   return (
     <>
       <Button

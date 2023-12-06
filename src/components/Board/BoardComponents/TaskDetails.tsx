@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useHome } from "../../../context/HomeContext";
+import { useBoard } from "../../../context/BoardContext";
 import { BoardSubtask, BoardTask } from "../../../types/generalTypes";
 import Icons from "../../Icons";
 import { CheckBox } from "../../CheckBox";
@@ -93,7 +93,7 @@ function SubtaskStatus({
   taskId: string;
   status: string;
 }) {
-  const { boardData, dispatch } = useHome();
+  const { boardData, dispatch } = useBoard();
 
   // TEMP
   if (!boardData)
@@ -130,7 +130,7 @@ function Subtask({
   column,
   taskId,
 }: subtaskProps) {
-  const { dispatch } = useHome();
+  const { dispatch } = useBoard();
   const [completed, setCompleted] = useState(() => isCompleted);
 
   // Identify where the board is located. Used to change the props of the main object.

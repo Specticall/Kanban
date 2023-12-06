@@ -1,20 +1,19 @@
 import Board from "../components/Board/BoardComponents/Board";
 import Navbar from "../components/Navbar";
-import { HomeProvider } from "../context/HomeContext";
+import { BoardProvider } from "../context/BoardContext";
 import { NavbarProvider, useNavbar } from "../context/NavbarContext";
 import { useViewportWidth } from "../hooks/useViewportWidth";
 import { ChildrenProp } from "../types/generalTypes";
-// import Popuplayout from
 
 export default function Home() {
   return (
-    <HomeProvider>
+    <BoardProvider>
       <NavbarProvider>
         <HomeLayout>
           <Board />
         </HomeLayout>
       </NavbarProvider>
-    </HomeProvider>
+    </BoardProvider>
   );
 }
 

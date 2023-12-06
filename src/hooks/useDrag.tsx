@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useViewportWidth } from "./useViewportWidth";
-import { useHome } from "../context/HomeContext";
+import { useBoard } from "../context/BoardContext";
 
 export function useDrag(ignoredElementClass: string) {
   const { screenType } = useViewportWidth();
-  const { status } = useHome();
+  const { status } = useBoard();
   const boardElRef = useRef<HTMLDivElement | null>(null);
 
   // Dragging the board with mouse
@@ -45,7 +45,7 @@ export function useDrag(ignoredElementClass: string) {
     return () => {
       boardEl.removeEventListener("mousemove", handleMouseDown);
     };
-  }, [status, screenType]);
+  }, [status, screenType, ignoredElementClass]);
 
   return boardElRef;
 }
