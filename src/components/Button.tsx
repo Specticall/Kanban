@@ -6,6 +6,7 @@ interface ButtonTypeProps extends ChildrenProp {
   buttonType?: ButtonTypes;
   className?: string;
   disabled?: boolean;
+  onClick?: () => void;
 }
 
 type ButtonStylesType = {
@@ -29,15 +30,17 @@ export function Button({
   className,
   children = "Button Text",
   disabled,
+  onClick = () => {},
 }: ButtonTypeProps) {
   return (
     <button
       disabled={disabled}
-      className={`py-4 px-6 rounded-full font-bold ${
+      className={`py-4 px-6 rounded-full  font-bold ${
         buttonStyles[buttonType]
       } ${disabled ? "" : hoverStyles[buttonType]} ${
         disabled ? "opacity-40" : ""
       } ${className}`}
+      onClick={onClick}
     >
       {children}
     </button>

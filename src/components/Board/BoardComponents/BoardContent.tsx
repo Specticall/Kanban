@@ -11,6 +11,11 @@ import { BoardEmptyMessage } from "../BoardStates/BoardEmptyMessage";
 import { BoardError } from "../BoardStates/BoardError";
 import PopupLayout from "../../PopupLayout";
 import { TaskDetails } from "./TaskDetails";
+import { ConfirmationModal } from "../../confirmationModal";
+import {
+  BoardItemProvider,
+  useBoardItem,
+} from "../../../context/BoardItemContext";
 
 export function BoardContent() {
   const { status, boardData } = useBoard();
@@ -62,11 +67,12 @@ function BoardColumns({
       <div className="grid gap-y-5">
         {tasks.map((task: BoardTask) => {
           return (
-            <BoardItems
-              column={column}
-              boardData={task}
+            <BoardItemProvider
+              locationDependenies={{ column, taskId: task.id }}
               key={`${task.title}${task.description}`}
-            />
+            >
+              <BoardItems column={column} boardData={task} />
+            </BoardItemProvider>
           );
         })}
       </div>
@@ -82,6 +88,7 @@ function BoardItems({
 }) {
   const { title, subtasks } = boardData;
   const [showDetails, setShowDetails] = useState(false);
+  const { showConfirmationModal } = useBoardItem();
 
   const completedSubtasks: number = subtasks.reduce(
     (result: number, current: BoardSubtask) => {
@@ -96,11 +103,12 @@ function BoardItems({
 
   return (
     <>
-      {showDetails && (
+      {showDetails && !showConfirmationModal && (
         <PopupLayout onClose={handleClick}>
           <TaskDetails {...boardData} column={column} />
         </PopupLayout>
       )}
+      {showConfirmationModal && <ConfirmationDeleteTaskModal title={title} />}
       <div
         className="bg-elements px-4 py-6 rounded-lg shadow-item cursor-pointer group select-none"
         onClick={handleClick}
@@ -113,5 +121,17 @@ function BoardItems({
         </p>
       </div>
     </>
+  );
+}
+
+function ConfirmationDeleteTaskModal({ title }: { title: string }) {
+  const { handleAcceptDeletion, handleRejectDeletion } = useBoardItem();
+  return (
+    <ConfirmationModal
+      headingText="Delete this task?"
+      paragraphText={`Are you sure you want to delete the '${title}' task and its substasks? This action cannot be reversed`}
+      onAccept={handleAcceptDeletion}
+      onReject={handleRejectDeletion}
+    />
   );
 }

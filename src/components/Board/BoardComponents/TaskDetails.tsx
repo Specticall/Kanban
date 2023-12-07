@@ -1,9 +1,10 @@
-import { useState, MouseEventHandler } from "react";
+import { useState } from "react";
 import { useBoard } from "../../../context/BoardContext";
 import { BoardSubtask, BoardTask } from "../../../types/generalTypes";
 import { CheckBox } from "../../CheckBox";
 import { DropDown } from "../../DropDown";
 import { KebabMenu } from "../../KebabMenu";
+import { useBoardItem } from "../../../context/BoardItemContext";
 
 type subtaskProps = BoardSubtask & { column: number; taskId: string };
 
@@ -31,31 +32,11 @@ export function TaskDetails({
 function SubtaskHeading({
   title,
   description,
-  column,
-  taskId,
 }: {
   title: string;
   description: string;
-  column: number;
-  taskId: string;
 }) {
-  const { dispatch } = useBoard();
-  const handleAction: MouseEventHandler = (e) => {
-    const actionType = (e.target as HTMLButtonElement).dataset.action;
-
-    switch (actionType) {
-      case "delete":
-        dispatch({
-          type: "board/task/delete",
-          payload: { locationDependencies: { column, taskId } },
-        });
-        break;
-      case "edit":
-        break;
-      default:
-        throw new Error("Invalid action type for kebab menu");
-    }
-  };
+  const { handleAction } = useBoardItem();
 
   return (
     <>
