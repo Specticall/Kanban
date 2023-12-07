@@ -1,6 +1,7 @@
-import { useState, useLayoutEffect, useRef, useEffect } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
 import Icons from "./Icons";
 import { useViewportWidth } from "../hooks/useViewportWidth";
+import { useClickOutside } from "../hooks/useClickOutside";
 
 type DropDownProps = {
   onSelect: (selectedOption: string) => void;
@@ -45,17 +46,9 @@ export function DropDown({
   }, [viewportHeight, optionsHeight]);
 
   // Closes the drop down options when clicking outside the component.
-  useEffect(() => {
-    const handleClickOutside = (e: Event) => {
-      if ((e.target as HTMLDivElement).closest(".drop-down__component")) return;
-      setIsOpen(false);
-    };
-    window.addEventListener("click", handleClickOutside);
-
-    return () => {
-      window.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
+  useClickOutside(() => {
+    setIsOpen(false);
+  }, ["drop-down__component"]);
 
   return (
     <div

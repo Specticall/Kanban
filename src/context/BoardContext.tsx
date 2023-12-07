@@ -5,6 +5,7 @@ import { ErrorMessage } from "../types/generalTypes";
 
 import { get_boardList_with_modified_subtask } from "../helper/BoardStateUpdater/get_boardList_with_modified_subtask";
 import { get_boardList_with_swapped_category } from "../helper/BoardStateUpdater/get_boardList_with_swapped_category";
+import { get_boardList_with_deleted_task } from "../helper/BoardStateUpdater/get_boardList_with_deleted_task";
 
 /*
 Types for the Board context
@@ -17,7 +18,6 @@ interface BoardContextValues extends BoardStates {
   dispatch: ({ type, payload }: BoardAction) => void;
 }
 
-//DEPRECATED
 // Reducer state type
 interface BoardStates {
   boardDataAll: BoardData[] | [];
@@ -26,10 +26,8 @@ interface BoardStates {
   boardPage: number;
 }
 
-//DEPRECATED
 type updateSubtaskProps = { column: number; taskId: string; subtaskId: string };
 
-//DEPRECATED
 // Reducer action type
 type BoardAction =
   | { type: "data/load"; payload: BoardData[] }
@@ -45,13 +43,16 @@ type BoardAction =
         locationDependencies: Omit<updateSubtaskProps, "subtaskId">;
         newColumnName: string;
       };
+    }
+  | {
+      type: "board/task/delete";
+      payload: { locationDependencies: Omit<updateSubtaskProps, "subtaskId"> };
     };
 
 // =============================================================
 
 const BoardContext = createContext<BoardContextValues | null>(null);
 
-//DEPRECATED
 const initialState: BoardStates = {
   boardDataAll: [],
   boardData: undefined,
@@ -59,9 +60,24 @@ const initialState: BoardStates = {
   boardPage: 0,
 };
 
-//DEPRECATED
 function reducer(state: BoardStates, action: BoardAction): BoardStates {
   switch (action.type) {
+    case "board/task/delete": {
+      const locationDependencies = {
+        ...action.payload.locationDependencies,
+        boardDataAll: state.boardDataAll,
+        page: state.boardPage,
+      };
+
+      const updatedBoard =
+        get_boardList_with_deleted_task(locationDependencies);
+
+      return {
+        ...state,
+        boardDataAll: updatedBoard,
+        boardData: updatedBoard[state.boardPage],
+      };
+    }
     case "board/task/subtask/switch-status": {
       const locationDependencies = {
         ...action.payload.locationDependencies,
@@ -121,13 +137,11 @@ function reducer(state: BoardStates, action: BoardAction): BoardStates {
 }
 
 export function BoardProvider({ children }: ChildrenProp) {
-  //DEPRECATED
   const [{ boardData, status, boardDataAll, boardPage }, dispatch] = useReducer(
     reducer,
     initialState
   );
 
-  //DEPRECATED
   // Fetch board's data on load.
   useEffect(() => {
     const getBoards = async (): Promise<BoardData | void> => {

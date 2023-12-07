@@ -29,6 +29,7 @@ export default {
         bg: "var(--clr-bg)",
         shadownav: "var(--clr-shadownav)",
         navhover: "var(--clr-navhover)",
+        kebab: "var(--clr-kebab)",
       },
       boxShadow: {
         nav: "0px 10px 20px 0px var(--clr-shadownav)",

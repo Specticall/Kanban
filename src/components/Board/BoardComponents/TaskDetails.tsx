@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, MouseEventHandler } from "react";
 import { useBoard } from "../../../context/BoardContext";
 import { BoardSubtask, BoardTask } from "../../../types/generalTypes";
-import Icons from "../../Icons";
 import { CheckBox } from "../../CheckBox";
 import { DropDown } from "../../DropDown";
+import { KebabMenu } from "../../KebabMenu";
 
 type subtaskProps = BoardSubtask & { column: number; taskId: string };
 
@@ -16,7 +16,7 @@ export function TaskDetails({
   id: taskId,
 }: BoardTask & { column: number }) {
   const SubtaskListProps = { subtasks, column, taskId, title };
-  const SubtaskHeadingProps = { title, description };
+  const SubtaskHeadingProps = { title, description, column, taskId };
   const SubtaskStatusProps = { column, taskId, status };
 
   return (
@@ -31,16 +31,53 @@ export function TaskDetails({
 function SubtaskHeading({
   title,
   description,
+  column,
+  taskId,
 }: {
   title: string;
   description: string;
+  column: number;
+  taskId: string;
 }) {
+  const { dispatch } = useBoard();
+  const handleAction: MouseEventHandler = (e) => {
+    const actionType = (e.target as HTMLButtonElement).dataset.action;
+
+    switch (actionType) {
+      case "delete":
+        dispatch({
+          type: "board/task/delete",
+          payload: { locationDependencies: { column, taskId } },
+        });
+        break;
+      case "edit":
+        break;
+      default:
+        throw new Error("Invalid action type for kebab menu");
+    }
+  };
+
   return (
     <>
       <header className="mb-6 flex justify-between items-center gap-8">
         <h3 className="font-bold text-lg text-primary">{title}</h3>
         <div>
-          <Icons iconType="menu" />
+          <KebabMenu>
+            <button
+              className="text-secondary cursor-pointer hover:text-primary"
+              data-action={"edit"}
+              onClick={handleAction}
+            >
+              Edit Board
+            </button>
+            <button
+              className="text-red cursor-pointer hover:text-redhover"
+              data-action={"delete"}
+              onClick={handleAction}
+            >
+              Delete Board
+            </button>
+          </KebabMenu>
         </div>
       </header>
       <p className="text-pg text-secondary leading-6 mb-6">{description}</p>
@@ -107,7 +144,7 @@ function SubtaskStatus({
     <>
       <p className="text-secondary text-pg mb-4">Current Status</p>
       <DropDown
-        value={status}
+        value={status || optionList[column]}
         onSelect={(selected) => {
           dispatch({
             type: "board/task/subtask/switch-status",
