@@ -11,11 +11,11 @@ import { BoardEmptyMessage } from "../BoardStates/BoardEmptyMessage";
 import { BoardError } from "../BoardStates/BoardError";
 import PopupLayout from "../../PopupLayout";
 import { TaskDetails } from "./TaskDetails";
-import { ConfirmationModal } from "../../confirmationModal";
 import {
   BoardItemProvider,
   useBoardItem,
 } from "../../../context/BoardItemContext";
+import { ConfirmationModal } from "../../ConfirmationModal";
 
 export function BoardContent() {
   const { status, boardData } = useBoard();

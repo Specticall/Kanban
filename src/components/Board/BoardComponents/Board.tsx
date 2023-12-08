@@ -3,11 +3,13 @@ import Icons from "../../Icons";
 import { BoardHeading } from "./BoardHeading";
 import { BoardContent } from "./BoardContent";
 import { useNavbar } from "../../../context/NavbarContext";
+import { TaskForm } from "./TaskForm";
 
 export default function Board() {
   return (
     <main className="h-full flex flex-col relative overflow-hidden max-h-screen">
       <ShowSidebar />
+      <TaskForm />
       <BoardHeading />
       <BoardContent />
     </main>

@@ -24,6 +24,8 @@ interface BoardStates {
   boardData: BoardData | undefined;
   status: "loading" | "ready" | "error";
   boardPage: number;
+  // TEMP
+  openedTaskForm: object;
 }
 
 type updateSubtaskProps = { column: number; taskId: string; subtaskId: string };
@@ -58,6 +60,7 @@ const initialState: BoardStates = {
   boardData: undefined,
   status: "loading",
   boardPage: 0,
+  openedTaskForm: {},
 };
 
 function reducer(state: BoardStates, action: BoardAction): BoardStates {

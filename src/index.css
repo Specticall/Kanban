@@ -44,6 +44,7 @@
     --clr-navhover: rgba(151, 151, 151, 0.108);
     --clr-shadowitem: rgba(54, 78, 126, 0.1);
     --clr-kebab: white;
+    --clr-placeholder: rgba(0, 0, 0, 0.25);
   }
 
   :root[data-theme="dark"] {
@@ -58,6 +59,7 @@
     --clr-navhover: #ffffff;
     --clr-shadowitem: rgba(54, 78, 126, 0.1);
     --clr-kebab: #20212c;
+    --clr-placeholder: rgba(255, 255, 255, 0.25);
   }
 }
 

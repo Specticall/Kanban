@@ -1,4 +1,5 @@
 import { ChildrenProp } from "../types/generalTypes";
+import { ButtonHTMLAttributes } from "react";
 
 type ButtonTypes = "primary" | "secondary" | "destructive";
 
@@ -7,6 +8,7 @@ interface ButtonTypeProps extends ChildrenProp {
   className?: string;
   disabled?: boolean;
   onClick?: () => void;
+  htmlType?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
 }
 
 type ButtonStylesType = {
@@ -31,6 +33,7 @@ export function Button({
   children = "Button Text",
   disabled,
   onClick = () => {},
+  htmlType = "button",
 }: ButtonTypeProps) {
   return (
     <button
@@ -41,6 +44,7 @@ export function Button({
         disabled ? "opacity-40" : ""
       } ${className}`}
       onClick={onClick}
+      type={htmlType}
     >
       {children}
     </button>
