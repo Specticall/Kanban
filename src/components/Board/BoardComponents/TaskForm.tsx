@@ -1,6 +1,11 @@
 import { Button } from "../../Button";
 import PopupLayout from "../../PopupLayout";
-import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
+import {
+  useForm,
+  SubmitHandler,
+  useFieldArray,
+  Controller,
+} from "react-hook-form";
 import { InputText, InputTextArea } from "../../FormInputs";
 import Icons from "../../Icons";
 import { DropDown } from "../../DropDown";
@@ -14,6 +19,8 @@ export type TaskFormFields = {
   title: string;
   description: string;
   subtaskList: BoardSubtask[];
+  status: string;
+  id: string;
 };
 
 type TaskFormProps = {
@@ -39,6 +46,9 @@ const formTypeDisplay: Record<string, formDisplay> = {
 
 export function TaskForm({ formType, formData }: TaskFormProps) {
   const { boardData, dispatch } = useBoard();
+
+  const statusList = boardData?.columns.map((column) => column.name) || [];
+
   const {
     register,
     handleSubmit,
@@ -51,6 +61,8 @@ export function TaskForm({ formType, formData }: TaskFormProps) {
       subtaskList: formData?.subtasks.filter((subtask) => subtask.title) || [
         { title: "", isCompleted: false, id: createUUID() },
       ],
+      status: formData?.status || statusList[0],
+      id: formData?.id || createUUID(),
     },
     shouldUseNativeValidation: false,
   });
@@ -74,10 +86,8 @@ export function TaskForm({ formType, formData }: TaskFormProps) {
 
   const onSubmit: SubmitHandler<TaskFormFields> = (data) => {
     console.log(data, formType);
-    // dispatch({ type: "form/submit/task", payload: data });
+    // dispatch({ type: "form/submit/task", payload: data })
   };
-
-  const statusList = boardData?.columns.map((column) => column.name) || [];
 
   return (
     <PopupLayout onClose={() => dispatch({ type: "form/close" })}>
@@ -130,12 +140,22 @@ export function TaskForm({ formType, formData }: TaskFormProps) {
         </Button>
         <div>
           <h3 className="text-primary text-sm mb-2">Status</h3>
-          <DropDown
-            onSelect={(data) => {
-              console.log(data);
+          <Controller
+            control={control}
+            name="status"
+            defaultValue={formData?.status || statusList[0]}
+            render={({ field: { onChange } }) => {
+              return (
+                <DropDown
+                  onSelect={(data) => {
+                    onChange(data);
+                    console.log(data);
+                  }}
+                  optionList={statusList}
+                  value={formData?.status || statusList[0]}
+                />
+              );
             }}
-            optionList={statusList}
-            value={statusList[0]}
           />
         </div>
         <Button className="text-md [&]:py-2" htmlType="submit">

@@ -18,7 +18,8 @@ export function DropDown({
   optionList,
   className = "",
   value,
-}: DropDownProps) {
+}: // react-hook-form
+DropDownProps) {
   const [selected, setSelected] = useState(() => value);
   const [isOpen, setIsOpen] = useState(() => false);
   const [direction, setDirection] = useState<"up" | "down">(() => "down");
