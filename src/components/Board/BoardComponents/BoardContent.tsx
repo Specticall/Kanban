@@ -30,7 +30,7 @@ export function BoardContent() {
   const columnAmount = boardData.columns.length + 1;
 
   return (
-    <div className="bg-bg h-full overflow-scroll p-6 " ref={boardElementRef}>
+    <div className="bg-bg h-full overflow-auto p-6 " ref={boardElementRef}>
       <div
         className={`grid min-h-full w-fit overflow-visible gap-6 content-start pb-6 pr-6`}
         style={{

@@ -86,7 +86,14 @@ export function TaskForm({ formType, formData }: TaskFormProps) {
 
   const onSubmit: SubmitHandler<TaskFormFields> = (data) => {
     console.log(data, formType);
-    // dispatch({ type: "form/submit/task", payload: data })
+    const newTask = {
+      description: data.description,
+      id: data.id,
+      status: data.status,
+      subtasks: data.subtaskList,
+      title: data.title,
+    };
+    dispatch({ type: "form/submit/task", payload: newTask });
   };
 
   return (

@@ -1,16 +1,21 @@
-import { BoardData, BoardTask } from "../../types/generalTypes";
+import {
+  BoardColumnType,
+  BoardData,
+  BoardTask,
+} from "../../types/generalTypes";
 
 //@ts-expect-error : lodash clone deep import issue
 import cloneDeep from "lodash.clonedeep";
 
 type locationDependenciesParams = {
   page: number;
-  column: number;
+  newColumnName: string;
   boardDataAll: BoardData[];
+  initialColumn: number;
 };
 
 export function get_boardList_with_updated_task({
-  locationDependencies: { page, column, boardDataAll },
+  locationDependencies: { page, newColumnName, initialColumn, boardDataAll },
   value: newTask,
 }: {
   locationDependencies: locationDependenciesParams;
@@ -18,14 +23,36 @@ export function get_boardList_with_updated_task({
 }) {
   const updatedBoard = cloneDeep(boardDataAll);
 
-  const newTaskList: BoardTask[] = updatedBoard[page].columns[
-    column
-  ].tasks.reduce((newList: BoardTask[], current: BoardTask) => {
-    return current.id === newTask.id ? newTask : current;
-  }, []);
+  const newColumn: number = updatedBoard[page].columns.findIndex(
+    (column: BoardColumnType) => column.name === newColumnName
+  );
 
-  console.log(newTaskList);
-  // updatedBoard[page].columns[column].tasks[targetTaskIndex] = newTask;
+  // 1. perform insertion at new column and deletion at initial column if the task has different column values.
+  if (newColumn !== initialColumn) {
+    // 1.1 Remove previous task element.
+    updatedBoard[page].columns[initialColumn].tasks = updatedBoard[
+      page
+    ].columns[initialColumn].tasks.filter(
+      (task: BoardTask) => task.id !== newTask.id
+    );
+
+    // 1.2 Add new task element.
+    updatedBoard[page].columns[newColumn].tasks.push(newTask);
+  } else {
+    // 2. Perform a reduce operation to replace the old task with the new task object.
+    const newTaskList: BoardTask[] = updatedBoard[page].columns[
+      newColumn
+    ].tasks.reduce((newList: BoardTask[], current: BoardTask) => {
+      return [...newList, current.id === newTask.id ? newTask : current];
+    }, []);
+
+    updatedBoard[page].columns[newColumn].tasks = newTaskList;
+  }
 
   return updatedBoard;
 }
+
+/*
+1. Move columns -> deletion / insertion
+
+*/

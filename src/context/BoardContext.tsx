@@ -34,7 +34,7 @@ interface BoardStates {
   boardPage: number;
   formType: formTypeProp;
   formTaskData: BoardTask | undefined;
-  formTaskColumn: number;
+  formInitialColumn: number;
 }
 
 type updateSubtaskProps = { column: number; taskId: string; subtaskId: string };
@@ -78,32 +78,32 @@ const initialState: BoardStates = {
   boardPage: 0,
   formType: "none",
   formTaskData: undefined,
-  formTaskColumn: 0,
+  formInitialColumn: 0,
 };
 
 function reducer(state: BoardStates, action: BoardAction): BoardStates {
   switch (action.type) {
     // TEMP : Need to make the status field functional first.
-    // case "form/submit/task": {
-    //   const locationDependencies = {
-    //     column: state.formTaskColumn,
-    //     boardDataAll: state.boardDataAll,
-    //     page: state.boardPage,
-    //   };
+    case "form/submit/task": {
+      const locationDependencies = {
+        newColumnName: action.payload.status,
+        boardDataAll: state.boardDataAll,
+        page: state.boardPage,
+        initialColumn: state.formInitialColumn,
+      };
 
-    //   const updatedBoard = get_boardList_with_updated_task({
-    //     locationDependencies,
-    //     value: action.payload,
-    //   });
+      const updatedBoard = get_boardList_with_updated_task({
+        locationDependencies,
+        value: action.payload,
+      });
 
-    //   console.log(updatedBoard);
-    //   return {
-    //     ...state,
-    //     // formType: "none",
-    //     // boardDataAll: updatedBoard,
-    //     // boardData: updatedBoard[state.boardPage],
-    //   };
-    // }
+      return {
+        ...state,
+        formType: "none",
+        boardDataAll: updatedBoard,
+        boardData: updatedBoard[state.boardPage],
+      };
+    }
     case "form/create/task": {
       return {
         ...state,
@@ -118,6 +118,7 @@ function reducer(state: BoardStates, action: BoardAction): BoardStates {
         formTaskData: state.boardData?.columns[column].tasks.find(
           (task) => task.id === taskId
         ),
+        formInitialColumn: column,
       };
     }
     case "form/close":
