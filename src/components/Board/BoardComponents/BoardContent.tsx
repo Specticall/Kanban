@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useBoard } from "../../../context/BoardContext";
 import {
   BoardColumnType,
@@ -87,8 +86,7 @@ function BoardItems({
   column: number;
 }) {
   const { title, subtasks } = boardData;
-  const [showDetails, setShowDetails] = useState(false);
-  const { showConfirmationModal } = useBoardItem();
+  const { showConfirmationModal, showDetails, setShowDetails } = useBoardItem();
 
   const completedSubtasks: number = subtasks.reduce(
     (result: number, current: BoardSubtask) => {

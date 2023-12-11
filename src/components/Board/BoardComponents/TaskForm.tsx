@@ -1,22 +1,44 @@
 import { Button } from "../../Button";
 import PopupLayout from "../../PopupLayout";
 import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
-import { useState } from "react";
 import { InputText, InputTextArea } from "../../FormInputs";
 import Icons from "../../Icons";
 import { DropDown } from "../../DropDown";
-import { useBoard } from "../../../context/BoardContext";
+import { formTypeProp, useBoard } from "../../../context/BoardContext";
+import { BoardSubtask, BoardTask } from "../../../types/generalTypes";
+
+//@ts-expect-error imported library not supporting types.
+import { v4 as createUUID } from "uuid";
 
 export type TaskFormFields = {
   title: string;
   description: string;
-  subtaskList: {
-    title: string;
-  }[];
+  subtaskList: BoardSubtask[];
 };
 
-export function TaskForm({ type = "Add" }: { type: string }) {
-  const { boardData } = useBoard();
+type TaskFormProps = {
+  formType: formTypeProp;
+  formData: BoardTask | undefined;
+};
+
+type formDisplay = {
+  title: string;
+  button: string;
+};
+
+const formTypeDisplay: Record<string, formDisplay> = {
+  "create/task": {
+    title: "Add New Task",
+    button: "Create Task",
+  },
+  "edit/task": {
+    title: "Edit Task",
+    button: "Save Changes",
+  },
+};
+
+export function TaskForm({ formType, formData }: TaskFormProps) {
+  const { boardData, dispatch } = useBoard();
   const {
     register,
     handleSubmit,
@@ -24,12 +46,15 @@ export function TaskForm({ type = "Add" }: { type: string }) {
     formState: { errors },
   } = useForm<TaskFormFields>({
     defaultValues: {
-      title: "",
-      description: "",
-      subtaskList: [{ title: "" }],
+      title: formData?.title || "",
+      description: formData?.description || "",
+      subtaskList: formData?.subtasks.filter((subtask) => subtask.title) || [
+        { title: "", isCompleted: false, id: createUUID() },
+      ],
     },
     shouldUseNativeValidation: false,
   });
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "subtaskList",
@@ -38,6 +63,8 @@ export function TaskForm({ type = "Add" }: { type: string }) {
   const handleCreateTask = () => {
     append({
       title: "",
+      isCompleted: false,
+      id: createUUID(),
     });
   };
 
@@ -46,19 +73,20 @@ export function TaskForm({ type = "Add" }: { type: string }) {
   };
 
   const onSubmit: SubmitHandler<TaskFormFields> = (data) => {
-    console.log(data);
+    console.log(data, formType);
+    // dispatch({ type: "form/submit/task", payload: data });
   };
 
   const statusList = boardData?.columns.map((column) => column.name) || [];
 
   return (
-    <PopupLayout onClose={() => {}}>
+    <PopupLayout onClose={() => dispatch({ type: "form/close" })}>
       <form
         className="bg-elements p-8 rounded-lg text-primary grid gap-6 w-[30rem]"
         onSubmit={handleSubmit(onSubmit)}
         id="new Task"
       >
-        <h2 className="text-lg font-bold">{type} New Task</h2>
+        <h2 className="text-lg font-bold">{formTypeDisplay[formType].title}</h2>
         <InputText
           register={register}
           label="title"
@@ -111,7 +139,7 @@ export function TaskForm({ type = "Add" }: { type: string }) {
           />
         </div>
         <Button className="text-md [&]:py-2" htmlType="submit">
-          Create Task
+          {formTypeDisplay[formType].button}
         </Button>
       </form>
     </PopupLayout>

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, MouseEventHandler } from "react";
-import { ChildrenProp } from "../types/generalTypes";
+import { ChildrenProp, StateSetter } from "../types/generalTypes";
 import { useBoard } from "./BoardContext";
 
 type BoardItemContextValues = {
@@ -7,6 +7,8 @@ type BoardItemContextValues = {
   handleRejectDeletion: () => void;
   handleAction: MouseEventHandler;
   showConfirmationModal: boolean;
+  showDetails: boolean;
+  setShowDetails: StateSetter<boolean>;
 };
 
 type locationDependenies = {
@@ -24,6 +26,7 @@ export function BoardItemProvider({
   children,
   locationDependenies: { column, taskId },
 }: BoardItemProps) {
+  const [showDetails, setShowDetails] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(
     () => false
   );
@@ -49,6 +52,8 @@ export function BoardItemProvider({
         setShowConfirmationModal(true);
         break;
       case "edit":
+        dispatch({ type: "form/edit/task", payload: { column, taskId } });
+        setShowDetails(false);
         break;
       default:
         throw new Error("Invalid action type for kebab menu");
@@ -58,6 +63,8 @@ export function BoardItemProvider({
   return (
     <BoardItemContext.Provider
       value={{
+        showDetails,
+        setShowDetails,
         handleAcceptDeletion,
         handleRejectDeletion,
         showConfirmationModal,

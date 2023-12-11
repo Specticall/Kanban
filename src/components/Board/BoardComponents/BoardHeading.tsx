@@ -34,13 +34,15 @@ function HeadingTitle() {
 }
 function HeadingButtons() {
   const { screenType } = useViewportWidth();
-  const { boardData } = useBoard();
+  const { boardData, dispatch } = useBoard();
+
   return (
     <>
       <Button
         buttonType="primary"
         disabled={!boardData}
         className="max-md:py-3"
+        onClick={() => dispatch({ type: "form/create/task" })}
       >
         {screenType === "desktop" ? (
           "+ Add New Task"

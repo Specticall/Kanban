@@ -4,12 +4,17 @@ import { BoardHeading } from "./BoardHeading";
 import { BoardContent } from "./BoardContent";
 import { useNavbar } from "../../../context/NavbarContext";
 import { TaskForm } from "./TaskForm";
+import { useBoard } from "../../../context/BoardContext";
 
 export default function Board() {
+  const { formType, formTaskData } = useBoard();
+
   return (
     <main className="h-full flex flex-col relative overflow-hidden max-h-screen">
       <ShowSidebar />
-      <TaskForm />
+      {formType === "none" || (
+        <TaskForm formType={formType} formData={formTaskData} />
+      )}
       <BoardHeading />
       <BoardContent />
     </main>

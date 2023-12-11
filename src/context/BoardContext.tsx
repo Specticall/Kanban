@@ -1,21 +1,29 @@
 import { createContext, useContext, useReducer, useEffect } from "react";
-import { BoardData, ChildrenProp } from "../types/generalTypes";
+import { BoardData, BoardTask, ChildrenProp } from "../types/generalTypes";
 import { BASE_URL } from "../config/config";
 import { ErrorMessage } from "../types/generalTypes";
 
 import { get_boardList_with_modified_subtask } from "../helper/BoardStateUpdater/get_boardList_with_modified_subtask";
 import { get_boardList_with_swapped_category } from "../helper/BoardStateUpdater/get_boardList_with_swapped_category";
 import { get_boardList_with_deleted_task } from "../helper/BoardStateUpdater/get_boardList_with_deleted_task";
+import { get_boardList_with_updated_task } from "../helper/BoardStateUpdater/get_boardList_with_updated_task";
 
 /*
 Types for the Board context
 */
 type PageDestination = number;
 
+export type formTypeProp =
+  | "create/task"
+  | "edit/task"
+  | "create/board"
+  | "none";
+
 // Context output type
 interface BoardContextValues extends BoardStates {
   switchToPage: (pageDestination: PageDestination) => void;
   dispatch: ({ type, payload }: BoardAction) => void;
+  formType: formTypeProp;
 }
 
 // Reducer state type
@@ -24,8 +32,9 @@ interface BoardStates {
   boardData: BoardData | undefined;
   status: "loading" | "ready" | "error";
   boardPage: number;
-  // TEMP
-  openedTaskForm: object;
+  formType: formTypeProp;
+  formTaskData: BoardTask | undefined;
+  formTaskColumn: number;
 }
 
 type updateSubtaskProps = { column: number; taskId: string; subtaskId: string };
@@ -49,6 +58,13 @@ type BoardAction =
   | {
       type: "board/task/delete";
       payload: { locationDependencies: Omit<updateSubtaskProps, "subtaskId"> };
+    }
+  | { type: "form/edit/task"; payload: { column: number; taskId: string } }
+  | { type: "form/create/task"; payload?: null }
+  | { type: "form/close"; payload?: null }
+  | {
+      type: "form/submit/task";
+      payload: BoardTask;
     };
 
 // =============================================================
@@ -60,11 +76,56 @@ const initialState: BoardStates = {
   boardData: undefined,
   status: "loading",
   boardPage: 0,
-  openedTaskForm: {},
+  formType: "none",
+  formTaskData: undefined,
+  formTaskColumn: 0,
 };
 
 function reducer(state: BoardStates, action: BoardAction): BoardStates {
   switch (action.type) {
+    // TEMP : Need to make the status field functional first.
+    // case "form/submit/task": {
+    //   const locationDependencies = {
+    //     column: state.formTaskColumn,
+    //     boardDataAll: state.boardDataAll,
+    //     page: state.boardPage,
+    //   };
+
+    //   const updatedBoard = get_boardList_with_updated_task({
+    //     locationDependencies,
+    //     value: action.payload,
+    //   });
+
+    //   console.log(updatedBoard);
+    //   return {
+    //     ...state,
+    //     // formType: "none",
+    //     // boardDataAll: updatedBoard,
+    //     // boardData: updatedBoard[state.boardPage],
+    //   };
+    // }
+    case "form/create/task": {
+      return {
+        ...state,
+        formType: "create/task",
+      };
+    }
+    case "form/edit/task": {
+      const { column, taskId } = action.payload;
+      return {
+        ...state,
+        formType: "edit/task",
+        formTaskData: state.boardData?.columns[column].tasks.find(
+          (task) => task.id === taskId
+        ),
+      };
+    }
+    case "form/close":
+      return {
+        ...state,
+        formType: "none",
+        formTaskData: undefined,
+      };
     case "board/task/delete": {
       const locationDependencies = {
         ...action.payload.locationDependencies,
@@ -140,10 +201,10 @@ function reducer(state: BoardStates, action: BoardAction): BoardStates {
 }
 
 export function BoardProvider({ children }: ChildrenProp) {
-  const [{ boardData, status, boardDataAll, boardPage }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+  const [
+    { boardData, status, boardDataAll, boardPage, formType, formTaskData },
+    dispatch,
+  ] = useReducer(reducer, initialState);
 
   // Fetch board's data on load.
   useEffect(() => {
@@ -175,6 +236,8 @@ export function BoardProvider({ children }: ChildrenProp) {
     <BoardContext.Provider
       value={{
         boardData,
+        formTaskData,
+        formType,
         status,
         boardDataAll,
         boardPage,
