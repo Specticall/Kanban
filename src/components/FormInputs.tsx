@@ -33,7 +33,7 @@ export function InputText<T extends FieldValues>({
       <div className="relative">
         <input
           type="text"
-          {...register(`${label}` as const, {
+          {...register(`${label}` as Path<T>, {
             required,
           })}
           placeholder={placeholder}

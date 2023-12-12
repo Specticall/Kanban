@@ -8,6 +8,7 @@ import {
   FieldArrayWithId,
   UseFormRegister,
   FieldValues,
+  Path,
 } from "react-hook-form";
 import { InputText, InputTextArea } from "../../FormInputs";
 import Icons from "../../Icons";
@@ -17,7 +18,6 @@ import { BoardSubtask, BoardTask } from "../../../types/generalTypes";
 
 //@ts-expect-error imported library not supporting types.
 import { v4 as createUUID } from "uuid";
-import { Path } from "react-router-dom";
 
 export type TaskFormFields = {
   title: string;
@@ -157,12 +157,12 @@ export function TaskForm({ formType, formData }: TaskFormProps) {
 }
 
 type FormInputListType<T extends FieldValues> = {
-  fields: FieldArrayWithId<T>;
+  fields: FieldArrayWithId<T>[];
   register: UseFormRegister<T>;
   showErrors: (index: number) => boolean;
-  label: (index: number) => string;
+  label: (index: number) => Path<T>;
   onAppend: () => void;
-  onRemove: (index: number) => Path;
+  onRemove: (index: number) => void;
   formOptions: {
     heading: string;
     appendButtonText: string;
