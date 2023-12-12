@@ -1,8 +1,10 @@
+import { MouseEventHandler } from "react";
 import { useBoard } from "../../../context/BoardContext";
 import { useNavbar } from "../../../context/NavbarContext";
 import { useViewportWidth } from "../../../hooks/useViewportWidth";
 import { Button } from "../../Button";
 import Icons from "../../Icons";
+import { KebabMenu } from "../../KebabMenu";
 
 export function BoardHeading() {
   return (
@@ -13,6 +15,7 @@ export function BoardHeading() {
   );
 }
 function HeadingTitle() {
+  const { boardData } = useBoard();
   const { toggleSidebar } = useNavbar();
   const { screenType } = useViewportWidth();
   const onOpenNav = () => {
@@ -26,7 +29,7 @@ function HeadingTitle() {
     >
       <Icons iconType="logoMobile" className="md:hidden" />
       <h1 className="text-primary font-bold text-xl flex-1 max-md:text-lg flex items-center gap-x-3 ">
-        Platform Launch
+        {boardData?.name}
         {screenType === "desktop" || <Icons iconType="arrowDown" />}
       </h1>
     </div>
@@ -35,6 +38,20 @@ function HeadingTitle() {
 function HeadingButtons() {
   const { screenType } = useViewportWidth();
   const { boardData, dispatch } = useBoard();
+
+  const handleAction: MouseEventHandler = (e) => {
+    const actionType = (e.target as HTMLButtonElement).dataset.action;
+
+    switch (actionType) {
+      case "delete":
+        break;
+      case "edit":
+        dispatch({ type: "form/edit/board" });
+        break;
+      default:
+        throw new Error("Invalid action type for kebab menu on board header");
+    }
+  };
 
   return (
     <>
@@ -52,7 +69,22 @@ function HeadingButtons() {
           </>
         )}
       </Button>
-      <Icons iconType="menu" />
+      <KebabMenu>
+        <button
+          className="text-secondary cursor-pointer hover:text-primary"
+          data-action={"edit"}
+          onClick={handleAction}
+        >
+          Edit Board
+        </button>
+        <button
+          className="text-red cursor-pointer hover:text-redhover"
+          data-action={"delete"}
+          onClick={handleAction}
+        >
+          Delete Board
+        </button>
+      </KebabMenu>
     </>
   );
 }

@@ -29,7 +29,6 @@ export function get_boardList_with_updated_task({
 
   // 1. perform insertion at new column and deletion at initial column if the task has different column values.
   if (newColumn !== initialColumn) {
-    console.log("diff");
     // 1.1 Remove previous task element.
     updatedBoard[page].columns[initialColumn].tasks = updatedBoard[
       page

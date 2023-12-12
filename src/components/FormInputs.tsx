@@ -1,5 +1,8 @@
 import { capitalize } from "../helper/helper";
 import { UseFormRegister, Path, FieldValues } from "react-hook-form";
+import { FormInputListType } from "./Board/BoardComponents/TaskForm";
+import { Button } from "./Button";
+import Icons from "./Icons";
 
 type InputTextProps<T extends FieldValues> = {
   register: UseFormRegister<T>;
@@ -50,6 +53,7 @@ export function InputText<T extends FieldValues>({
     </div>
   );
 }
+
 export function InputTextArea<T extends FieldValues>({
   label,
   placeholder,
@@ -71,5 +75,49 @@ export function InputTextArea<T extends FieldValues>({
         }`}
       ></textarea>
     </div>
+  );
+}
+
+export function FormInputList<T extends FieldValues>({
+  fields,
+  register,
+  showErrors,
+  onAppend,
+  onRemove,
+  label: formLabel,
+  formOptions: { heading = "", appendButtonText = "" },
+}: FormInputListType<T>) {
+  return (
+    <>
+      <div className="">
+        <h3 className="text-primary text-sm mb-2">{heading}</h3>
+        <div className="grid gap-3 max-h-[10rem] overflow-y-auto">
+          {fields.map((field, i) => {
+            return (
+              <section key={field.id} className="flex gap-4">
+                <InputText
+                  disableLabelDisplay={true}
+                  register={register}
+                  label={formLabel(i)}
+                  placeholder="e.g. Make coffee"
+                  required
+                  showError={showErrors(i)}
+                />
+                <button onClick={() => onRemove(i)}>
+                  <Icons iconType="cross" />
+                </button>
+              </section>
+            );
+          })}
+        </div>
+      </div>
+      <Button
+        className="text-md [&]:py-2"
+        buttonType="secondary"
+        onClick={onAppend}
+      >
+        {appendButtonText}
+      </Button>
+    </>
   );
 }

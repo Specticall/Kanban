@@ -15,8 +15,6 @@ interface BoardItemType extends ChildrenProp {
   isAccent?: boolean;
 }
 
-const boards = ["Platform Launch", "Marketing Plan", "Roadmap"];
-
 export default function Navbar() {
   const { theme } = useApp();
   const { showSidebar, toggleSidebar } = useNavbar();
@@ -62,7 +60,6 @@ function Logo({ theme }: { theme: string }) {
 }
 
 function BoardList() {
-  // TEMP
   const { boardDataAll, boardPage: active } = useBoard();
 
   const boardsCount = boardDataAll.length;
@@ -72,8 +69,8 @@ function BoardList() {
       <p className="text-secondary tracking-[0.15rem] text-sm mb-8">
         ALL BOARDS ({boardsCount})
       </p>
-      <ul className="grid gap-y-[1.5rem] mb-6">
-        {boards.map((boardTitle, i) => {
+      <ul className="mb-6">
+        {boardDataAll.map(({ name: boardTitle }, i) => {
           return (
             <BoardItem
               active={active}
@@ -132,44 +129,50 @@ function HideSidebar() {
 }
 
 function BoardItem({ children, i = -1, active = -2, isAccent }: BoardItemType) {
-  const { switchToPage } = useBoard();
+  const { switchToPage, dispatch } = useBoard();
   const isSelected = active === i;
 
+  const handleClick = () => {
+    if (!isAccent) {
+      switchToPage(i);
+    } else {
+      dispatch({ type: "form/create/board" });
+    }
+  };
   return (
     <li
       key={`${i}-board-nav`}
-      className="group flex gap-4 items-center relative cursor-pointer"
-      onClick={() => {
-        if (!isAccent) {
-          switchToPage(i);
-        }
-      }}
+      className="group flex py-3 items-center relative cursor-pointer "
+      onClick={handleClick}
     >
       <div
         className={`${
           isSelected ? "bg-purple" : "bg-transparent"
-        } absolute h-[3rem] -left-8 right-0 rounded-tr-[6.25rem] rounded-br-[6.25rem] ${
+        } absolute top-0 bottom-0 -left-8 right-0 rounded-tr-[6.25rem] rounded-br-[6.25rem] ${
           !isSelected ? "group-hover:bg-navhover group-hover:text-purple" : ""
         }`}
       ></div>
-
-      <Icons
-        iconType="board"
-        className={`${isAccent ? "fill-purple" : "fill-secondary"} ${
-          isSelected ? "fill-white" : ""
-        } ${isSelected ? "" : "group-hover:fill-purple"} relative z-10`}
-      />
-      <p
-        className={`font-bold  ${
-          isAccent
-            ? "text-purple"
-            : isSelected
-            ? "text-white"
-            : "text-secondary"
-        }  ${!isSelected ? "group-hover:text-purple" : ""} relative z-10`}
-      >
-        {children}
-      </p>
+      <div className="flex items-center justify-center gap-4 py-0">
+        <div>
+          <Icons
+            iconType="board"
+            className={`${isAccent ? "fill-purple" : "fill-secondary"} ${
+              isSelected ? "fill-white" : ""
+            } ${isSelected ? "" : "group-hover:fill-purple"} relative z-10`}
+          />
+        </div>
+        <p
+          className={`font-bold min-[500px]:max-w-[10rem] ${
+            isAccent
+              ? "text-purple"
+              : isSelected
+              ? "text-white"
+              : "text-secondary"
+          }  ${!isSelected ? "group-hover:text-purple" : ""} relative z-10`}
+        >
+          {children}
+        </p>
+      </div>
     </li>
   );
 }

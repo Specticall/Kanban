@@ -11,13 +11,14 @@ import {
   Path,
 } from "react-hook-form";
 import { InputText, InputTextArea } from "../../FormInputs";
-import Icons from "../../Icons";
 import { DropDown } from "../../DropDown";
-import { formTypeProp, useBoard } from "../../../context/BoardContext";
-import { BoardSubtask, BoardTask } from "../../../types/generalTypes";
+import { useBoard } from "../../../context/BoardContext";
+import { BoardSubtask } from "../../../types/generalTypes";
 
 //@ts-expect-error imported library not supporting types.
 import { v4 as createUUID } from "uuid";
+import { TaskFormProps } from "./Board";
+import { FormInputList } from "../../FormInputs";
 
 export type TaskFormFields = {
   title: string;
@@ -25,11 +26,6 @@ export type TaskFormFields = {
   subtaskList: BoardSubtask[];
   status: string;
   id: string;
-};
-
-type TaskFormProps = {
-  formType: formTypeProp;
-  formData: BoardTask | undefined;
 };
 
 type formDisplay = {
@@ -156,7 +152,7 @@ export function TaskForm({ formType, formData }: TaskFormProps) {
   );
 }
 
-type FormInputListType<T extends FieldValues> = {
+export type FormInputListType<T extends FieldValues> = {
   fields: FieldArrayWithId<T>[];
   register: UseFormRegister<T>;
   showErrors: (index: number) => boolean;
@@ -168,47 +164,3 @@ type FormInputListType<T extends FieldValues> = {
     appendButtonText: string;
   };
 };
-
-function FormInputList<T extends FieldValues>({
-  fields,
-  register,
-  showErrors,
-  onAppend,
-  onRemove,
-  label: formLabel,
-  formOptions: { heading = "", appendButtonText = "" },
-}: FormInputListType<T>) {
-  return (
-    <>
-      <div className="">
-        <h3 className="text-primary text-sm mb-2">{heading}</h3>
-        <div className="grid gap-3 max-h-[10rem] overflow-y-auto">
-          {fields.map((field, i) => {
-            return (
-              <section key={field.id} className="flex gap-4">
-                <InputText
-                  disableLabelDisplay={true}
-                  register={register}
-                  label={formLabel(i)}
-                  placeholder="e.g. Make coffee"
-                  required
-                  showError={showErrors(i)}
-                />
-                <button onClick={() => onRemove(i)}>
-                  <Icons iconType="cross" />
-                </button>
-              </section>
-            );
-          })}
-        </div>
-      </div>
-      <Button
-        className="text-md [&]:py-2"
-        buttonType="secondary"
-        onClick={onAppend}
-      >
-        {appendButtonText}
-      </Button>
-    </>
-  );
-}

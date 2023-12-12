@@ -7,6 +7,8 @@ import { get_boardList_with_modified_subtask } from "../helper/BoardStateUpdater
 import { get_boardList_with_swapped_category } from "../helper/BoardStateUpdater/get_boardList_with_swapped_category";
 import { get_boardList_with_deleted_task } from "../helper/BoardStateUpdater/get_boardList_with_deleted_task";
 import { get_boardList_with_updated_task } from "../helper/BoardStateUpdater/get_boardList_with_updated_task";
+import { get_boardList_with_added_board } from "../helper/BoardStateUpdater/get_boardList_with_added_board";
+import { get_boardList_with_updated_boards } from "../helper/BoardStateUpdater/get_boardList_with_updated_boards";
 
 /*
 Types for the Board context
@@ -17,6 +19,7 @@ export type formTypeProp =
   | "create/task"
   | "edit/task"
   | "create/board"
+  | "edit/board"
   | "none";
 
 // Context output type
@@ -33,7 +36,7 @@ interface BoardStates {
   status: "loading" | "ready" | "error";
   boardPage: number;
   formType: formTypeProp;
-  formTaskData: BoardTask | undefined;
+  formData: BoardTask | BoardData | undefined;
   formInitialColumn: number;
 }
 
@@ -65,6 +68,29 @@ type BoardAction =
   | {
       type: "form/submit/task";
       payload: BoardTask;
+    }
+  | {
+      type: "form/create/board";
+      payload?: null;
+    }
+  | {
+      type: "form/submit/add/board";
+      payload: BoardData;
+    }
+  | {
+      type: "form/submit/edit/board";
+      payload: {
+        value: BoardData;
+        column: number;
+      };
+    }
+  | {
+      type: "form/edit/board";
+      payload?: null;
+    }
+  | {
+      type: "form/delete/board";
+      payload?: null;
     };
 
 // =============================================================
@@ -77,12 +103,33 @@ const initialState: BoardStates = {
   status: "loading",
   boardPage: 0,
   formType: "none",
-  formTaskData: undefined,
+  formData: undefined,
   formInitialColumn: 0,
 };
 
 function reducer(state: BoardStates, action: BoardAction): BoardStates {
   switch (action.type) {
+    case "form/submit/add/board": {
+      const updatedBoard = get_boardList_with_added_board({
+        dependencies: { boardDataAll: state.boardDataAll },
+        value: action.payload,
+      });
+
+      return { ...state, boardDataAll: updatedBoard, formType: "none" };
+    }
+    // case "form/submit/edit/board": {
+    //   const updatedBoard = get_boardList_with_updated_boards({
+    //     dependencies: {
+    //       boardDataAll: state.boardDataAll,
+    //       changedColumnIndex: action.payload.column,
+    //     },
+    //     value: action.payload.value,
+    //   });
+
+    //   console.log(updatedBoard);
+
+    //   return { ...state, formType: "none" };
+    // }
     case "form/submit/task": {
       const locationDependencies = {
         newColumnName: action.payload.status,
@@ -99,11 +146,22 @@ function reducer(state: BoardStates, action: BoardAction): BoardStates {
       return {
         ...state,
         formType: "none",
-        formTaskData: undefined,
+        formData: undefined,
         boardDataAll: updatedBoard,
         boardData: updatedBoard[state.boardPage],
       };
     }
+    case "form/edit/board":
+      return {
+        ...state,
+        formType: "edit/board",
+        formData: state.boardData,
+      };
+    case "form/create/board":
+      return {
+        ...state,
+        formType: "create/board",
+      };
     case "form/create/task": {
       return {
         ...state,
@@ -115,7 +173,7 @@ function reducer(state: BoardStates, action: BoardAction): BoardStates {
       return {
         ...state,
         formType: "edit/task",
-        formTaskData: state.boardData?.columns[column].tasks.find(
+        formData: state.boardData?.columns[column].tasks.find(
           (task) => task.id === taskId
         ),
         formInitialColumn: column,
@@ -125,7 +183,7 @@ function reducer(state: BoardStates, action: BoardAction): BoardStates {
       return {
         ...state,
         formType: "none",
-        formTaskData: undefined,
+        formData: undefined,
       };
     case "board/task/delete": {
       const locationDependencies = {
@@ -209,7 +267,7 @@ export function BoardProvider({ children }: ChildrenProp) {
       boardDataAll,
       boardPage,
       formType,
-      formTaskData,
+      formData,
       formInitialColumn,
     },
     dispatch,
@@ -246,7 +304,7 @@ export function BoardProvider({ children }: ChildrenProp) {
       value={{
         formInitialColumn,
         boardData,
-        formTaskData,
+        formData,
         formType,
         status,
         boardDataAll,
