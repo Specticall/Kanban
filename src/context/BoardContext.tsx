@@ -83,7 +83,6 @@ const initialState: BoardStates = {
 
 function reducer(state: BoardStates, action: BoardAction): BoardStates {
   switch (action.type) {
-    // TEMP : Need to make the status field functional first.
     case "form/submit/task": {
       const locationDependencies = {
         newColumnName: action.payload.status,
@@ -100,6 +99,7 @@ function reducer(state: BoardStates, action: BoardAction): BoardStates {
       return {
         ...state,
         formType: "none",
+        formTaskData: undefined,
         boardDataAll: updatedBoard,
         boardData: updatedBoard[state.boardPage],
       };
@@ -203,7 +203,15 @@ function reducer(state: BoardStates, action: BoardAction): BoardStates {
 
 export function BoardProvider({ children }: ChildrenProp) {
   const [
-    { boardData, status, boardDataAll, boardPage, formType, formTaskData },
+    {
+      boardData,
+      status,
+      boardDataAll,
+      boardPage,
+      formType,
+      formTaskData,
+      formInitialColumn,
+    },
     dispatch,
   ] = useReducer(reducer, initialState);
 
@@ -236,6 +244,7 @@ export function BoardProvider({ children }: ChildrenProp) {
   return (
     <BoardContext.Provider
       value={{
+        formInitialColumn,
         boardData,
         formTaskData,
         formType,

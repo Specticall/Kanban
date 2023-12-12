@@ -1,7 +1,7 @@
 import logoDark from "/assets/logo-dark.svg?url";
 import logoLight from "/assets/logo-light.svg?url";
 import { useApp } from "../context/AppContext";
-import { BoardData, ChildrenProp } from "../types/generalTypes";
+import { ChildrenProp } from "../types/generalTypes";
 import { ToggleButton } from "./ToggleButton";
 import Icons from "./Icons";
 import { useBoard } from "../context/BoardContext";
@@ -65,12 +65,7 @@ function BoardList() {
   // TEMP
   const { boardDataAll, boardPage: active } = useBoard();
 
-  const boardsCount = boardDataAll.reduce(
-    (result: number, current: BoardData) => {
-      return (result += current.columns.length);
-    },
-    0
-  );
+  const boardsCount = boardDataAll.length;
 
   return (
     <>

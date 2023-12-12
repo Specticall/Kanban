@@ -1,10 +1,9 @@
 import { capitalize } from "../helper/helper";
-import { UseFormRegister, Path } from "react-hook-form";
-import { TaskFormFields } from "./Board/BoardComponents/TaskForm";
+import { UseFormRegister, Path, FieldValues } from "react-hook-form";
 
-type InputTextProps = {
-  register: UseFormRegister<TaskFormFields>;
-  label: Path<TaskFormFields>;
+type InputTextProps<T extends FieldValues> = {
+  register: UseFormRegister<T>;
+  label: Path<T>;
   placeholder: string;
   className?: string;
   required?: boolean;
@@ -12,7 +11,7 @@ type InputTextProps = {
   labelDisplay?: string;
   disableLabelDisplay?: boolean;
 };
-export function InputText({
+export function InputText<T extends FieldValues>({
   label,
   labelDisplay = "",
   placeholder,
@@ -21,7 +20,7 @@ export function InputText({
   className = "",
   showError = false,
   disableLabelDisplay = false,
-}: InputTextProps) {
+}: InputTextProps<T>) {
   if (labelDisplay.length === 0) labelDisplay = label;
 
   return (
@@ -51,14 +50,14 @@ export function InputText({
     </div>
   );
 }
-export function InputTextArea({
+export function InputTextArea<T extends FieldValues>({
   label,
   placeholder,
   register,
   required,
   className = "",
   showError = false,
-}: InputTextProps) {
+}: InputTextProps<T>) {
   return (
     <div className="flex flex-col gap-2 ">
       <label htmlFor={`text-input-${label}`} className="text-primary text-sm">

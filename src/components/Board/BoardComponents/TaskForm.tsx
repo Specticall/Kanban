@@ -5,6 +5,9 @@ import {
   SubmitHandler,
   useFieldArray,
   Controller,
+  FieldArrayWithId,
+  UseFormRegister,
+  FieldValues,
 } from "react-hook-form";
 import { InputText, InputTextArea } from "../../FormInputs";
 import Icons from "../../Icons";
@@ -14,6 +17,7 @@ import { BoardSubtask, BoardTask } from "../../../types/generalTypes";
 
 //@ts-expect-error imported library not supporting types.
 import { v4 as createUUID } from "uuid";
+import { Path } from "react-router-dom";
 
 export type TaskFormFields = {
   title: string;
@@ -80,12 +84,11 @@ export function TaskForm({ formType, formData }: TaskFormProps) {
     });
   };
 
-  const handleDeleteTask = (index: number) => () => {
+  const handleDeleteTask = (index: number) => {
     remove(index);
   };
 
   const onSubmit: SubmitHandler<TaskFormFields> = (data) => {
-    console.log(data, formType);
     const newTask = {
       description: data.description,
       id: data.id,
@@ -104,47 +107,30 @@ export function TaskForm({ formType, formData }: TaskFormProps) {
         id="new Task"
       >
         <h2 className="text-lg font-bold">{formTypeDisplay[formType].title}</h2>
-        <InputText
+        <InputText<TaskFormFields>
           register={register}
           label="title"
           placeholder="e.g. Take coffee break"
           required
           showError={Boolean(errors?.title)}
         />
-        <InputTextArea
+        <InputTextArea<TaskFormFields>
           register={register}
           label="description"
           placeholder="e.g. It's always good to take a break. This 15 minute break will recharge the batteries a little"
         />
-        <div className="">
-          <h3 className="text-primary text-sm mb-2">Subtasks</h3>
-          <div className="grid gap-3 max-h-[10rem] overflow-y-auto">
-            {fields.map((field, i) => {
-              return (
-                <section key={field.id} className="flex gap-4">
-                  <InputText
-                    disableLabelDisplay={true}
-                    register={register}
-                    label={`subtaskList.${i}.title`}
-                    placeholder="e.g. Make coffee"
-                    required
-                    showError={Boolean(errors?.subtaskList?.[i]?.title?.type)}
-                  />
-                  <button onClick={handleDeleteTask(i)}>
-                    <Icons iconType="cross" />
-                  </button>
-                </section>
-              );
-            })}
-          </div>
-        </div>
-        <Button
-          className="text-md [&]:py-2"
-          buttonType="secondary"
-          onClick={handleCreateTask}
-        >
-          + Add New Subtask
-        </Button>
+        <FormInputList<TaskFormFields>
+          fields={fields}
+          register={register}
+          showErrors={(i) => Boolean(errors?.subtaskList?.[i]?.title?.type)}
+          onAppend={handleCreateTask}
+          onRemove={handleDeleteTask}
+          label={(i) => `subtaskList.${i}.title`}
+          formOptions={{
+            heading: "Subtasks",
+            appendButtonText: "+ Add New Subtask",
+          }}
+        />
         <div>
           <h3 className="text-primary text-sm mb-2">Status</h3>
           <Controller
@@ -154,10 +140,7 @@ export function TaskForm({ formType, formData }: TaskFormProps) {
             render={({ field: { onChange } }) => {
               return (
                 <DropDown
-                  onSelect={(data) => {
-                    onChange(data);
-                    console.log(data);
-                  }}
+                  onSelect={(data) => onChange(data)}
                   optionList={statusList}
                   value={formData?.status || statusList[0]}
                 />
@@ -170,5 +153,62 @@ export function TaskForm({ formType, formData }: TaskFormProps) {
         </Button>
       </form>
     </PopupLayout>
+  );
+}
+
+type FormInputListType<T extends FieldValues> = {
+  fields: FieldArrayWithId<T>;
+  register: UseFormRegister<T>;
+  showErrors: (index: number) => boolean;
+  label: (index: number) => string;
+  onAppend: () => void;
+  onRemove: (index: number) => Path;
+  formOptions: {
+    heading: string;
+    appendButtonText: string;
+  };
+};
+
+function FormInputList<T extends FieldValues>({
+  fields,
+  register,
+  showErrors,
+  onAppend,
+  onRemove,
+  label: formLabel,
+  formOptions: { heading = "", appendButtonText = "" },
+}: FormInputListType<T>) {
+  return (
+    <>
+      <div className="">
+        <h3 className="text-primary text-sm mb-2">{heading}</h3>
+        <div className="grid gap-3 max-h-[10rem] overflow-y-auto">
+          {fields.map((field, i) => {
+            return (
+              <section key={field.id} className="flex gap-4">
+                <InputText
+                  disableLabelDisplay={true}
+                  register={register}
+                  label={formLabel(i)}
+                  placeholder="e.g. Make coffee"
+                  required
+                  showError={showErrors(i)}
+                />
+                <button onClick={() => onRemove(i)}>
+                  <Icons iconType="cross" />
+                </button>
+              </section>
+            );
+          })}
+        </div>
+      </div>
+      <Button
+        className="text-md [&]:py-2"
+        buttonType="secondary"
+        onClick={onAppend}
+      >
+        {appendButtonText}
+      </Button>
+    </>
   );
 }
