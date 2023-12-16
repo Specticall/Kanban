@@ -15,6 +15,7 @@ import {
   useBoardItem,
 } from "../../../context/BoardItemContext";
 import { ConfirmationModal } from "../../ConfirmationModal";
+import { ColorPickerInput } from "../../ColorPicker";
 
 export function BoardContent() {
   const { status, boardData } = useBoard();
@@ -57,12 +58,33 @@ function BoardColumns({
   name,
   tasks,
   column,
+  color,
 }: BoardColumnType & { column: number }) {
+  // const [showColorPicker, setShowColorPicker] = useState(() => false);
+  const { dispatch } = useBoard();
+
+  // const handleClickColor = () => {
+  //   setShowColorPicker((current) => !current);
+  // };
+
+  const handleSelectColor = (color: string) => {
+    dispatch({
+      type: "column/change-color",
+      payload: { newColor: color, column },
+    });
+  };
   return (
     <div className="w-[17.5rem]">
-      <h2 className="mb-6 tracking-widest text-sm font-bold text-secondary">
-        {name.toLocaleUpperCase()} ({tasks.length})
-      </h2>
+      <div className="mb-6 flex items-center justify-start gap-2 relative">
+        <ColorPickerInput
+          identifier={`color-picker-${column}`}
+          onSelectColor={handleSelectColor}
+          color={color}
+        />
+        <h2 className="tracking-widest text-sm font-bold text-secondary">
+          {name.toLocaleUpperCase()} ({tasks.length})
+        </h2>
+      </div>
       <div className="grid gap-y-5">
         {tasks.map((task: BoardTask) => {
           return (

@@ -6,6 +6,9 @@ import { FormInputList, InputText } from "../../FormInputs";
 import { Button } from "../../Button";
 import { BoardFormProps } from "./Board";
 
+//@ts-expect-error imported library not supporting types.
+import { v4 as createUUID } from "uuid";
+
 type BoardFormFields = BoardData;
 
 const formTypeDisplay: Record<string, { title: string; button: string }> = {
@@ -30,7 +33,9 @@ export function BoardForm({ formType, formData }: BoardFormProps) {
   } = useForm<BoardFormFields>({
     defaultValues: {
       name: formData?.name || "",
-      columns: formData?.columns || [{ name: "", tasks: [] }],
+      columns: formData?.columns || [
+        { name: "", tasks: [], id: createUUID(), color: "#FFF" },
+      ],
     },
     shouldUseNativeValidation: false,
   });
@@ -44,6 +49,8 @@ export function BoardForm({ formType, formData }: BoardFormProps) {
     append({
       name: "",
       tasks: [],
+      id: createUUID(),
+      color: "#FFF",
     });
   };
 
@@ -57,7 +64,9 @@ export function BoardForm({ formType, formData }: BoardFormProps) {
         dispatch({ type: "form/submit/add/board", payload: data });
         break;
       case "edit/board":
-        // dispatch({ type: "form/submit/edit/board", payload: data });
+        // console.log(data);
+        dispatch({ type: "form/submit/edit/board", payload: data });
+        // console.log(data);
         break;
       default:
         throw new Error(
@@ -82,12 +91,15 @@ export function BoardForm({ formType, formData }: BoardFormProps) {
           showError={Boolean(errors?.name)}
         />
         <FormInputList<BoardFormFields>
+          control={control}
+          colorPicker
           fields={fields}
           register={register}
           showErrors={(i) => Boolean(errors?.columns?.[i])}
           onAppend={handleCreateTask}
           onRemove={handleDeleteTask}
           label={(i) => `columns.${i}.name`}
+          colorPickerLabel={(i) => `columns.${i}.color`}
           formOptions={{
             heading: "Board Columns",
             appendButtonText: "+ Add New Column",

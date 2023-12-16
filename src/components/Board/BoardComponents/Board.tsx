@@ -4,7 +4,7 @@ import { BoardHeading } from "./BoardHeading";
 import { BoardContent } from "./BoardContent";
 import { useNavbar } from "../../../context/NavbarContext";
 import { TaskForm } from "./TaskForm";
-import { useBoard, formTypeProp } from "../../../context/BoardContext";
+import { useBoard } from "../../../context/BoardContext";
 import { BoardForm } from "./BoardForm";
 import { BoardData, BoardTask } from "../../../types/generalTypes";
 

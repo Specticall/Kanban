@@ -1,19 +1,39 @@
 import { useClickOutside } from "../hooks/useClickOutside";
 import { ChildrenProp } from "../types/generalTypes";
-// import { useViewportWidth } from "../hooks/useViewportWidth";
+import { useViewportWidth } from "../hooks/useViewportWidth";
 import Icons from "./Icons";
-import { useState } from "react";
+import { useLayoutEffect, useState, useRef } from "react";
 
+type Tdirection = "center" | "left";
+
+const directionStyle: { center: string; left: string } = {
+  center: "left-[50%] translate-x-[-50%]",
+  left: "right-0",
+};
 export function KebabMenu({ children }: ChildrenProp) {
   const [isOpen, setIsOpen] = useState(() => false);
-  // const { screenWidth } = useViewportWidth();
+  const [direction, setDirection] = useState<Tdirection>(() => "center");
+  const { viewportWidth } = useViewportWidth();
+  const element = useRef<null | HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const listElement = element.current;
+    if (!listElement) return;
+    const elRight = listElement.getBoundingClientRect().right;
+    const elWidth = listElement.getBoundingClientRect().width;
+    if (viewportWidth - elRight < elWidth) {
+      setDirection("left");
+    } else {
+      setDirection("center");
+    }
+  }, [viewportWidth, isOpen]);
 
   useClickOutside(() => {
     setIsOpen(false);
   }, ["kebab-menu"]);
 
   return (
-    <div className="relative kebab-menu">
+    <div className="relative kebab-menu z-20">
       <div
         className="p-2 cursor-pointer"
         onClick={() => {
@@ -24,8 +44,9 @@ export function KebabMenu({ children }: ChildrenProp) {
       </div>
       {isOpen && (
         <div
-          className="bg-kebab grid p-4 w-[10rem] place-items-start text-sm gap-4 rounded-lg absolute top-8 left-[50%] translate-x-[-50%]"
+          className={`bg-kebab grid p-4 w-[10rem] mt-2 place-items-start text-sm gap-4 rounded-lg absolute top-8 ${directionStyle[direction]}`}
           style={{}}
+          ref={element}
         >
           {children}
         </div>

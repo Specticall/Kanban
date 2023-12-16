@@ -24,6 +24,8 @@ export type BoardTask = {
 
 export type BoardColumnType = {
   name: string;
+  id: string;
+  color: string;
   tasks: BoardTask[];
 };
 

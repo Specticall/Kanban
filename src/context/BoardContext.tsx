@@ -9,6 +9,8 @@ import { get_boardList_with_deleted_task } from "../helper/BoardStateUpdater/get
 import { get_boardList_with_updated_task } from "../helper/BoardStateUpdater/get_boardList_with_updated_task";
 import { get_boardList_with_added_board } from "../helper/BoardStateUpdater/get_boardList_with_added_board";
 import { get_boardList_with_updated_boards } from "../helper/BoardStateUpdater/get_boardList_with_updated_boards";
+import { get_boardList_with_deleted_board } from "../helper/BoardStateUpdater/get_boardList_with_deleted_board";
+import { get_boardList_with_updated_color } from "../helper/BoardStateUpdater/get_boardList_with_updated_color";
 
 /*
 Types for the Board context
@@ -38,6 +40,7 @@ interface BoardStates {
   formType: formTypeProp;
   formData: BoardTask | BoardData | undefined;
   formInitialColumn: number;
+  showBoardDeleteConfirmation: boolean;
 }
 
 type updateSubtaskProps = { column: number; taskId: string; subtaskId: string };
@@ -79,10 +82,7 @@ type BoardAction =
     }
   | {
       type: "form/submit/edit/board";
-      payload: {
-        value: BoardData;
-        column: number;
-      };
+      payload: BoardData;
     }
   | {
       type: "form/edit/board";
@@ -90,7 +90,15 @@ type BoardAction =
     }
   | {
       type: "form/delete/board";
+      payload: boolean;
+    }
+  | {
+      type: "form/delete/board/confirmation";
       payload?: null;
+    }
+  | {
+      type: "column/change-color";
+      payload: { newColor: string; column: number };
     };
 
 // =============================================================
@@ -105,31 +113,81 @@ const initialState: BoardStates = {
   formType: "none",
   formData: undefined,
   formInitialColumn: 0,
+  showBoardDeleteConfirmation: false,
 };
 
 function reducer(state: BoardStates, action: BoardAction): BoardStates {
   switch (action.type) {
+    case "column/change-color": {
+      const updatedBoard = get_boardList_with_updated_color({
+        dependencies: {
+          boardDataAll: state.boardDataAll,
+          page: state.boardPage,
+          column: action.payload.column,
+        },
+        value: action.payload.newColor,
+      });
+
+      // console.log(updatedBoard);
+
+      return {
+        ...state,
+        boardDataAll: updatedBoard,
+        boardData: updatedBoard[state.boardPage],
+      };
+    }
+    case "form/delete/board/confirmation": {
+      return {
+        ...state,
+        showBoardDeleteConfirmation: true,
+      };
+    }
+    case "form/delete/board": {
+      const updatedBoard = get_boardList_with_deleted_board({
+        dependencies: {
+          boardDataAll: state.boardDataAll,
+          page: state.boardPage,
+        },
+      });
+
+      return {
+        ...state,
+        showBoardDeleteConfirmation: false,
+        boardDataAll: action.payload ? updatedBoard : state.boardDataAll,
+        boardPage: 0,
+        boardData: updatedBoard[0],
+      };
+    }
     case "form/submit/add/board": {
       const updatedBoard = get_boardList_with_added_board({
         dependencies: { boardDataAll: state.boardDataAll },
         value: action.payload,
       });
 
-      return { ...state, boardDataAll: updatedBoard, formType: "none" };
+      return {
+        ...state,
+        boardDataAll: updatedBoard,
+        boardData: updatedBoard[updatedBoard.length - 1],
+        boardPage: updatedBoard.length - 1,
+        formType: "none",
+      };
     }
-    // case "form/submit/edit/board": {
-    //   const updatedBoard = get_boardList_with_updated_boards({
-    //     dependencies: {
-    //       boardDataAll: state.boardDataAll,
-    //       changedColumnIndex: action.payload.column,
-    //     },
-    //     value: action.payload.value,
-    //   });
+    case "form/submit/edit/board": {
+      const updatedBoard = get_boardList_with_updated_boards({
+        dependencies: {
+          boardDataAll: state.boardDataAll,
+          page: state.boardPage,
+        },
+        value: action.payload,
+      });
 
-    //   console.log(updatedBoard);
-
-    //   return { ...state, formType: "none" };
-    // }
+      return {
+        ...state,
+        boardDataAll: updatedBoard,
+        boardData: updatedBoard[state.boardPage],
+        formType: "none",
+      };
+    }
     case "form/submit/task": {
       const locationDependencies = {
         newColumnName: action.payload.status,
@@ -269,6 +327,7 @@ export function BoardProvider({ children }: ChildrenProp) {
       formType,
       formData,
       formInitialColumn,
+      showBoardDeleteConfirmation,
     },
     dispatch,
   ] = useReducer(reducer, initialState);
@@ -311,6 +370,7 @@ export function BoardProvider({ children }: ChildrenProp) {
         boardPage,
         switchToPage,
         dispatch,
+        showBoardDeleteConfirmation,
       }}
     >
       {children}

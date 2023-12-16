@@ -1,8 +1,14 @@
 import { capitalize } from "../helper/helper";
-import { UseFormRegister, Path, FieldValues } from "react-hook-form";
+import {
+  UseFormRegister,
+  Path,
+  FieldValues,
+  Controller,
+} from "react-hook-form";
 import { FormInputListType } from "./Board/BoardComponents/TaskForm";
 import { Button } from "./Button";
 import Icons from "./Icons";
+import { ColorPickerInput } from "./ColorPicker";
 
 type InputTextProps<T extends FieldValues> = {
   register: UseFormRegister<T>;
@@ -84,17 +90,29 @@ export function FormInputList<T extends FieldValues>({
   showErrors,
   onAppend,
   onRemove,
+  colorPicker = false,
+  control,
+  colorPickerLabel,
   label: formLabel,
   formOptions: { heading = "", appendButtonText = "" },
 }: FormInputListType<T>) {
+  if (colorPicker && !colorPickerLabel) {
+    throw new Error(
+      "Form Input List has color picker enabled but no color picker label was provided"
+    );
+  }
+
   return (
     <>
-      <div className="">
+      <div className="relative">
         <h3 className="text-primary text-sm mb-2">{heading}</h3>
-        <div className="grid gap-3 max-h-[10rem] overflow-y-auto">
+        <div className="grid gap-3 max-h-[10rem] overflow-y-auto ">
           {fields.map((field, i) => {
             return (
-              <section key={field.id} className="flex gap-4">
+              <section
+                key={field.id}
+                className="flex gap-4 items-center justify-center "
+              >
                 <InputText
                   disableLabelDisplay={true}
                   register={register}
@@ -103,6 +121,27 @@ export function FormInputList<T extends FieldValues>({
                   required
                   showError={showErrors(i)}
                 />
+                {colorPicker && colorPickerLabel && (
+                  <Controller
+                    control={control}
+                    name={colorPickerLabel(i)}
+                    render={({ field: { onChange, value } }) => {
+                      return (
+                        <ColorPickerInput
+                          identifier={`color-picker-form-${i}`}
+                          onSelectColor={onChange}
+                          color={value}
+                          style={{ height: "1.25rem", width: "1.25rem" }}
+                          colorPickerStyle={{
+                            right: "6rem",
+                            left: "initial",
+                            top: "0rem",
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                )}
                 <button onClick={() => onRemove(i)}>
                   <Icons iconType="cross" />
                 </button>

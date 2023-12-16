@@ -5,6 +5,7 @@ import { useViewportWidth } from "../../../hooks/useViewportWidth";
 import { Button } from "../../Button";
 import Icons from "../../Icons";
 import { KebabMenu } from "../../KebabMenu";
+import { ConfirmationModal } from "../../ConfirmationModal";
 
 export function BoardHeading() {
   return (
@@ -37,13 +38,14 @@ function HeadingTitle() {
 }
 function HeadingButtons() {
   const { screenType } = useViewportWidth();
-  const { boardData, dispatch } = useBoard();
+  const { boardData, dispatch, showBoardDeleteConfirmation } = useBoard();
 
   const handleAction: MouseEventHandler = (e) => {
     const actionType = (e.target as HTMLButtonElement).dataset.action;
 
     switch (actionType) {
       case "delete":
+        dispatch({ type: "form/delete/board/confirmation" });
         break;
       case "edit":
         dispatch({ type: "form/edit/board" });
@@ -55,6 +57,7 @@ function HeadingButtons() {
 
   return (
     <>
+      {showBoardDeleteConfirmation && <ConfirmationDeleteBoardModal />}
       <Button
         buttonType="primary"
         disabled={!boardData}
@@ -86,5 +89,22 @@ function HeadingButtons() {
         </button>
       </KebabMenu>
     </>
+  );
+}
+
+function ConfirmationDeleteBoardModal() {
+  const { dispatch, boardData } = useBoard();
+  const handleReject = () =>
+    dispatch({ type: "form/delete/board", payload: false });
+
+  const handleAccept = () =>
+    dispatch({ type: "form/delete/board", payload: true });
+  return (
+    <ConfirmationModal
+      headingText="Delete this board?"
+      paragraphText={`Are you sure you want to delete the '${boardData?.name}' task and its substasks? This action cannot be reversed`}
+      onAccept={handleAccept}
+      onReject={handleReject}
+    />
   );
 }

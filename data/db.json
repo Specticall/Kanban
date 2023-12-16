@@ -5,6 +5,7 @@
       "columns": [
         {
           "name": "Todo",
+          "color": "#49C4E5",
           "tasks": [
             {
               "id": "taskid-1",
@@ -78,10 +79,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "id": "boardid-1-col-1"
         },
         {
           "name": "Doing",
+          "color": "#8471F2 ",
           "tasks": [
             {
               "id": "taskid-5",
@@ -211,10 +214,12 @@
                 }
               ]
             }
-          ]
+          ],
+          "id": "boardid-1-col-2"
         },
         {
           "name": "Done",
+          "color": "#67E2AE",
           "tasks": [
             {
               "id": "taskid-11",
@@ -332,7 +337,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "id": "boardid-1-col-3"
         }
       ]
     },
@@ -341,6 +347,7 @@
       "columns": [
         {
           "name": "Todo",
+          "color": "#49C4E5",
           "tasks": [
             {
               "id": "taskid-18",
@@ -431,15 +438,20 @@
                 }
               ]
             }
-          ]
+          ],
+          "id": "boardid-2-col-1"
         },
         {
           "name": "Doing",
-          "tasks": []
+          "color": "#8471F2 ",
+          "tasks": [],
+          "id": "boardid-2-col-2"
         },
         {
           "name": "Done",
-          "tasks": []
+          "color": "#67E2AE",
+          "tasks": [],
+          "id": "boardid-2-col-3"
         }
       ]
     },
@@ -448,6 +460,7 @@
       "columns": [
         {
           "name": "Now",
+          "color": "#49C4E5",
           "tasks": [
             {
               "id": "taskid-21",
@@ -490,15 +503,20 @@
                 }
               ]
             }
-          ]
+          ],
+          "id": "boardid-3-col-1"
         },
         {
           "name": "Next",
-          "tasks": []
+          "color": "#8471F2 ",
+          "tasks": [],
+          "id": "boardid-3-col-2"
         },
         {
           "name": "Later",
-          "tasks": []
+          "color": "#67E2AE",
+          "tasks": [],
+          "id": "boardid-3-col-3"
         }
       ]
     }

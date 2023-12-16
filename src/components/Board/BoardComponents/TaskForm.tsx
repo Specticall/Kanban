@@ -9,6 +9,7 @@ import {
   UseFormRegister,
   FieldValues,
   Path,
+  Control,
 } from "react-hook-form";
 import { InputText, InputTextArea } from "../../FormInputs";
 import { DropDown } from "../../DropDown";
@@ -58,7 +59,7 @@ export function TaskForm({ formType, formData }: TaskFormProps) {
     defaultValues: {
       title: formData?.title || "",
       description: formData?.description || "",
-      subtaskList: formData?.subtasks.filter((subtask) => subtask.title) || [
+      subtaskList: formData?.subtasks?.filter((subtask) => subtask.title) || [
         { title: "", isCompleted: false, id: createUUID() },
       ],
       status: formData?.status || statusList[0],
@@ -163,4 +164,7 @@ export type FormInputListType<T extends FieldValues> = {
     heading: string;
     appendButtonText: string;
   };
+  colorPickerLabel?: (index: number) => Path<T>;
+  colorPicker?: boolean;
+  control?: Control<T>;
 };
