@@ -1,5 +1,5 @@
 import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
-import { useBoard } from "../../../context/BoardContext";
+import { formTypeProp, useBoard } from "../../../context/BoardContext";
 import { BoardData } from "../../../types/generalTypes";
 import PopupLayout from "../../PopupLayout";
 import { FormInputList, InputText } from "../../FormInputs";
@@ -11,8 +11,19 @@ import { v4 as createUUID } from "uuid";
 
 type BoardFormFields = BoardData;
 
-const formTypeDisplay: Record<string, { title: string; button: string }> = {
+type TBoardFormType = {
+  [K in formTypeProp]: K extends `${string}/board${string}` ? K : never;
+}[formTypeProp];
+
+const formTypeDisplay: Record<
+  TBoardFormType,
+  { title: string; button: string }
+> = {
   "create/board": {
+    title: "Add New Board",
+    button: "Create New Board",
+  },
+  "edit/board/new-column": {
     title: "Add New Board",
     button: "Create New Board",
   },
@@ -25,6 +36,19 @@ const formTypeDisplay: Record<string, { title: string; button: string }> = {
 export function BoardForm({ formType, formData }: BoardFormProps) {
   const { dispatch } = useBoard();
 
+  const defaultColumnValue =
+    formType === "edit/board/new-column"
+      ? formData && [
+          ...formData.columns,
+          {
+            name: "",
+            tasks: [],
+            id: createUUID(),
+            color: "#FFF",
+          },
+        ]
+      : formData?.columns;
+
   const {
     register,
     handleSubmit,
@@ -33,8 +57,13 @@ export function BoardForm({ formType, formData }: BoardFormProps) {
   } = useForm<BoardFormFields>({
     defaultValues: {
       name: formData?.name || "",
-      columns: formData?.columns || [
-        { name: "", tasks: [], id: createUUID(), color: "#FFF" },
+      columns: defaultColumnValue || [
+        {
+          name: "",
+          tasks: [],
+          id: createUUID(),
+          color: "#FFF",
+        },
       ],
     },
     shouldUseNativeValidation: false,
@@ -64,9 +93,10 @@ export function BoardForm({ formType, formData }: BoardFormProps) {
         dispatch({ type: "form/submit/add/board", payload: data });
         break;
       case "edit/board":
-        // console.log(data);
         dispatch({ type: "form/submit/edit/board", payload: data });
-        // console.log(data);
+        break;
+      case "edit/board/new-column":
+        dispatch({ type: "form/submit/edit/board", payload: data });
         break;
       default:
         throw new Error(
