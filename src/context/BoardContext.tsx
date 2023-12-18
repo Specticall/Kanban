@@ -22,6 +22,7 @@ export type formTypeProp =
   | "edit/task"
   | "create/board"
   | "edit/board"
+  | "edit/board/new-column"
   | "none";
 
 // Context output type
@@ -86,6 +87,10 @@ type BoardAction =
     }
   | {
       type: "form/edit/board";
+      payload?: null;
+    }
+  | {
+      type: "form/edit/board/newColumn";
       payload?: null;
     }
   | {
@@ -213,6 +218,12 @@ function reducer(state: BoardStates, action: BoardAction): BoardStates {
       return {
         ...state,
         formType: "edit/board",
+        formData: state.boardData,
+      };
+    case "form/edit/board/newColumn":
+      return {
+        ...state,
+        formType: "edit/board/new-column",
         formData: state.boardData,
       };
     case "form/create/board":

@@ -4,43 +4,56 @@ import { BoardHeading } from "./BoardHeading";
 import { BoardContent } from "./BoardContent";
 import { useNavbar } from "../../../context/NavbarContext";
 import { TaskForm } from "./TaskForm";
-import { useBoard } from "../../../context/BoardContext";
+import { formTypeProp, useBoard } from "../../../context/BoardContext";
 import { BoardForm } from "./BoardForm";
 import { BoardData, BoardTask } from "../../../types/generalTypes";
 
 export type TaskFormProps = {
-  formType: "create/task" | "edit/task";
+  // wtf is this tho
+  formType: {
+    [K in formTypeProp]: K extends `${string}/task` ? K : never;
+  }[formTypeProp];
   formData: BoardTask | undefined;
 };
 
 export type BoardFormProps = {
-  formType: "create/board" | "edit/board";
-  formData: BoardData;
+  formType: {
+    [K in formTypeProp]: K extends `${string}/board${string}` ? K : never;
+  }[formTypeProp];
+  formData: BoardData | undefined;
 };
 
 export default function Board() {
   const { formType, formData } = useBoard();
-  // const props: TaskFormProps | BoardFormProps = { formType, formTaskData };
+  const formValues = { formType, formData };
 
   return (
     <main className="h-full flex flex-col relative overflow-hidden max-h-screen">
       <ShowSidebar />
-      {formType !== "none" ? (
-        <BoardFormModal formType={formType} formData={formData} />
-      ) : null}
+      {formType !== "none" && <BoardFormModal {...formValues} />}
       <BoardHeading />
       <BoardContent />
     </main>
   );
 }
 
-// TEMP
-function BoardFormModal(props: any) {
-  if (props.formType === "create/task" || props.formType === "edit/task")
-    return <TaskForm {...props} />;
+type TBoardFormModal = {
+  formType: formTypeProp;
+  formData: BoardData | BoardTask | undefined;
+};
 
-  if (props.formType === "create/board" || props.formType === "edit/board")
-    return <BoardForm {...props} />;
+function BoardFormModal({ formType, formData }: TBoardFormModal) {
+  if (formType === "create/task" || formType == "edit/task") {
+    return <TaskForm formType={formType} formData={formData as BoardTask} />;
+  }
+
+  if (
+    formType === "edit/board" ||
+    formType === "create/board" ||
+    formType === "edit/board/new-column"
+  ) {
+    return <BoardForm formType={formType} formData={formData as BoardData} />;
+  }
 }
 
 function ShowSidebar() {
