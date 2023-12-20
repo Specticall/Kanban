@@ -1,6 +1,6 @@
 import { createContext, useContext, useReducer, useEffect } from "react";
 import { BoardData, BoardTask, ChildrenProp } from "../types/generalTypes";
-import { BASE_URL } from "../config/config";
+import { DEV_ENVIROMENT } from "../config/config";
 import { ErrorMessage } from "../types/generalTypes";
 
 import { get_boardList_with_modified_subtask } from "../helper/BoardStateUpdater/get_boardList_with_modified_subtask";
@@ -11,6 +11,7 @@ import { get_boardList_with_added_board } from "../helper/BoardStateUpdater/get_
 import { get_boardList_with_updated_boards } from "../helper/BoardStateUpdater/get_boardList_with_updated_boards";
 import { get_boardList_with_deleted_board } from "../helper/BoardStateUpdater/get_boardList_with_deleted_board";
 import { get_boardList_with_updated_color } from "../helper/BoardStateUpdater/get_boardList_with_updated_color";
+import { JSONServer, StaticDB } from "../helper/boardFetch";
 
 /*
 Types for the Board context
@@ -344,22 +345,19 @@ export function BoardProvider({ children }: ChildrenProp) {
 
   // Fetch board's data on load.
   useEffect(() => {
-    const getBoards = async (): Promise<BoardData | void> => {
-      try {
-        const response = await fetch(`${BASE_URL}/boards`);
+    // DEPENDENCY INJECTION GO BRR
+    const API =
+      DEV_ENVIROMENT === "development" ? new JSONServer() : new StaticDB();
 
-        if (!response.ok)
-          throw new Error("Something went wrong while fetching");
-
-        const data: BoardData[] = await response.json();
-
+    const getBoards = async () => {
+      const data: BoardData[] | ErrorMessage = await API.getData();
+      if (typeof data === "string") {
+        dispatch({ type: "data/error", payload: data });
+      } else {
         dispatch({ type: "data/load", payload: data });
-      } catch (error) {
-        const errorMessage: ErrorMessage =
-          error instanceof Error ? error.message : "An Error Occured";
-        dispatch({ type: "data/error", payload: errorMessage });
       }
     };
+
     getBoards();
   }, []);
 
