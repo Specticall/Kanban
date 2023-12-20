@@ -49,14 +49,14 @@ function SubtaskHeading({
               data-action={"edit"}
               onClick={handleAction}
             >
-              Edit Board
+              Edit Task
             </button>
             <button
               className="text-red cursor-pointer hover:text-redhover"
               data-action={"delete"}
               onClick={handleAction}
             >
-              Delete Board
+              Delete Task
             </button>
           </KebabMenu>
         </div>

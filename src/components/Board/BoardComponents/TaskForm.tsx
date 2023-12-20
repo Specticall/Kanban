@@ -99,7 +99,7 @@ export function TaskForm({ formType, formData }: TaskFormProps) {
   return (
     <PopupLayout onClose={() => dispatch({ type: "form/close" })}>
       <form
-        className="bg-elements p-8 rounded-lg text-primary grid gap-6 w-[30rem]"
+        className="bg-elements p-8 rounded-lg text-primary grid gap-6 w-full max-[550px]:p-6"
         onSubmit={handleSubmit(onSubmit)}
         id="new Task"
       >
@@ -115,6 +115,7 @@ export function TaskForm({ formType, formData }: TaskFormProps) {
           register={register}
           label="description"
           placeholder="e.g. It's always good to take a break. This 15 minute break will recharge the batteries a little"
+          className="max-[550px]:min-h-[6rem]"
         />
         <FormInputList<TaskFormFields>
           fields={fields}

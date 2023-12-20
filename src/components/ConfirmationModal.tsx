@@ -21,10 +21,10 @@ export function ConfirmationModal({
 }: ConfirmationModalProps) {
   return (
     <PopupLayout onClose={handleReject}>
-      <div className="bg-elements max-w-[34rem] p-8 rounded-lg grid gap-6">
+      <div className="bg-elements max-w-[34rem] p-8 rounded-lg grid gap-6 max-[550px]:p-6">
         <h2 className="text-lg text-red font-bold">{headingText}</h2>
         <p className="text-md text-secondary">{paragraphText}</p>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 max-[550px]:grid-cols-1">
           <Button
             className="w-full text-md [&]:py-3"
             buttonType="destructive"

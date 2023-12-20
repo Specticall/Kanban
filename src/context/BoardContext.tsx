@@ -133,8 +133,6 @@ function reducer(state: BoardStates, action: BoardAction): BoardStates {
         value: action.payload.newColor,
       });
 
-      // console.log(updatedBoard);
-
       return {
         ...state,
         boardDataAll: updatedBoard,
@@ -191,6 +189,7 @@ function reducer(state: BoardStates, action: BoardAction): BoardStates {
         boardDataAll: updatedBoard,
         boardData: updatedBoard[state.boardPage],
         formType: "none",
+        formData: undefined,
       };
     }
     case "form/submit/task": {

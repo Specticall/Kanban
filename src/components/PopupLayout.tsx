@@ -16,7 +16,9 @@ export default function PopupLayout({ children, onClose }: PopupLayoutProps) {
       className="fixed inset-0 bg-black/50 z-20 grid place-items-center"
       onClick={handleClick}
     >
-      <div className="popup-modal">{children}</div>
+      <div className="popup-modal w-full max-w-[30rem] max-[550px]:px-6">
+        {children}
+      </div>
     </div>
   );
 }
